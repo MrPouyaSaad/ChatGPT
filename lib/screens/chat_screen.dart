@@ -17,6 +17,16 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: myAppBar(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: _isTyping
+          ? SizedBox(
+              height: 120,
+              child: SpinKitThreeBounce(
+                color: Colors.white,
+                size: 24,
+              ),
+            )
+          : null,
       body: Column(
         children: [
           Expanded(
