@@ -33,7 +33,24 @@ class ChatWidget extends StatelessWidget {
                     'Hello',
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
-                )
+                ),
+                if (!isUser) ...[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.thumb_up_alt_outlined,
+                        color: Colors.white,
+                      ),
+                      SizedBox(width: 6),
+                      Icon(
+                        Icons.thumb_down_alt_outlined,
+                        color: Colors.white,
+                      )
+                    ],
+                  )
+                ]
               ],
             ),
           ),
