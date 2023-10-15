@@ -1,4 +1,5 @@
 import 'package:chat_gpt/constants/const.dart';
+import 'package:chat_gpt/widgets/chat_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -17,15 +18,19 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       appBar: myAppBar(),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          if (_isTyping) ...[
-            SpinKitThreeBounce(
-              color: Colors.white,
-              size: 24,
+          Expanded(
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: 20,
+              itemBuilder: (context, index) {
+                return ChatWidget(
+                  isUser: index.isEven,
+                );
+              },
             ),
-          ],
-          SizedBox(height: 16),
+          ),
+          Divider(height: 4),
           MyBottomNavigation(),
         ],
       ),
