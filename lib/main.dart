@@ -19,7 +19,8 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: scaffoldBackgroundColor,
         appBarTheme: AppBarTheme(
           backgroundColor: cardColor,
-          elevation: 0.0,
+          elevation: 2.0,
+          foregroundColor: Colors.white,
         ),
         useMaterial3: true,
       ),
