@@ -1,4 +1,5 @@
 import 'package:chat_gpt/constants/const.dart';
+import 'package:chat_gpt/widgets/drop_down_widget.dart';
 import 'package:flutter/material.dart';
 
 class Services {
@@ -10,6 +11,7 @@ class Services {
         return Padding(
           padding: const EdgeInsets.all(18.0),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Flexible(
                 child: Text(
@@ -17,6 +19,10 @@ class Services {
                   style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
               ),
+              Flexible(
+                flex: 2,
+                child: DropDownWidget(),
+              )
             ],
           ),
         );
