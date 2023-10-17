@@ -1,4 +1,5 @@
 import 'package:chat_gpt/constants/const.dart';
+import 'package:chat_gpt/services/services.dart';
 import 'package:chat_gpt/widgets/chat_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: myAppBar(),
+      appBar: myAppBar(context),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: _isTyping
           ? SizedBox(
@@ -40,7 +41,10 @@ class _ChatScreenState extends State<ChatScreen> {
               },
             ),
           ),
-          Divider(height: 4),
+          Divider(
+            height: 1,
+            color: Colors.black26,
+          ),
           MyBottomNavigation(),
         ],
       ),
@@ -85,12 +89,20 @@ class MyBottomNavigation extends StatelessWidget {
   }
 }
 
-AppBar myAppBar() {
+AppBar myAppBar(BuildContext context) {
   return AppBar(
     title: Text('SaadGPT'),
     leading: Padding(
       padding: const EdgeInsets.only(left: 8, top: 8, bottom: 8),
       child: Image.asset(openAiLogo),
     ),
+    actions: [
+      IconButton(
+        onPressed: () async {
+          await Services.showBottomSheet(context);
+        },
+        icon: Icon(Icons.more_vert_rounded),
+      ),
+    ],
   );
 }
