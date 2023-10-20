@@ -5,12 +5,12 @@ import 'package:chat_gpt/models/models_model.dart';
 import 'package:http/http.dart' as http;
 
 class ApiServices {
-  Future<List<Models>> getModels() async {
+  static Future<List<Models>> getModels() async {
     try {
-      var response = await http.get(Uri.parse('$baseUrl/model'),
+      var response = await http.get(Uri.parse('$baseUrl/models'),
           headers: {'Authorization': ' Bearer $apiKey'});
       Map<String, dynamic> jsonResponse = jsonDecode(response.body);
-      if (jsonResponse == 'error') {
+      if (jsonResponse.containsKey('error')) {
         throw HttpException(jsonResponse['error']['message']);
       }
       List temp = [];
