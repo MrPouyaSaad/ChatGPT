@@ -1,9 +1,15 @@
 import 'package:chat_gpt/constants/const.dart';
+import 'package:chat_gpt/providers/models_provider.dart';
 import 'package:chat_gpt/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(
+      create: (context) => ModelsProvider(),
+    ),
+  ], child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
