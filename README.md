@@ -1,6 +1,6 @@
 # chat_gpt
 
-A new Flutter project.
+ChatGPT App with many A.I models
 
 ## Getting Started
 
