@@ -10,4 +10,8 @@ class Models {
   });
   factory Models.fromJson(Map<String, dynamic> json) =>
       Models(id: json['id'], root: json['root'], create: json['created']);
+
+  static List<Models> modelsList(List response) {
+    return response.map((e) => Models.fromJson(e)).toList();
+  }
 }
