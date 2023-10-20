@@ -1,7 +1,6 @@
 import 'package:chat_gpt/constants/const.dart';
 import 'package:chat_gpt/models/models_model.dart';
 import 'package:chat_gpt/services/api.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class DropDownWidget extends StatefulWidget {
@@ -12,7 +11,7 @@ class DropDownWidget extends StatefulWidget {
 }
 
 class _DropDownWidgetState extends State<DropDownWidget> {
-  String currentModel = 'text-search-babbage-doc-001';
+  String currentModel = 'gpt-3.5-turbo';
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Models>>(
@@ -31,6 +30,11 @@ class _DropDownWidgetState extends State<DropDownWidget> {
             child: DropdownButton(
               value: currentModel,
               dropdownColor: scaffoldBackgroundColor,
+              elevation: 0,
+              isDense: true,
+              iconEnabledColor: Colors.white,
+              borderRadius: BorderRadius.circular(9),
+              padding: EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 4),
               items: List<DropdownMenuItem<String>>.generate(
                 snapshot.data!.length,
                 (index) {
