@@ -9,7 +9,7 @@ class ModelsProvider with ChangeNotifier {
     return currentlyModel;
   }
 
-  void set setCurrentlyModel(String newModel) {
+  void setCurrentlyModel(String newModel) {
     currentlyModel = newModel;
     notifyListeners();
   }
