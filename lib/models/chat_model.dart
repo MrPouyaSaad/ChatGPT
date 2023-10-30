@@ -7,5 +7,6 @@ class ChatModel {
     required this.index,
   });
 
-  // ChatModel.fromJson(Map<String, dynamic> json) {}
+  factory ChatModel.fromJson(Map<String, dynamic> json) =>
+      ChatModel(msg: json['msg'], index: json['index']);
 }
