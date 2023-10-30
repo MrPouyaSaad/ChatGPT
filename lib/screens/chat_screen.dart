@@ -22,16 +22,23 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   bool _isTyping = false;
+
   late TextEditingController _msgController;
+  late ScrollController _scrollController;
+  late FocusNode _focusNode;
   @override
   void initState() {
+    _scrollController = ScrollController();
     _msgController = TextEditingController();
+    _focusNode = FocusNode();
     super.initState();
   }
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _msgController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -58,6 +65,7 @@ class _ChatScreenState extends State<ChatScreen> {
         children: [
           Expanded(
             child: ListView.builder(
+              controller: _scrollController,
               shrinkWrap: true,
               itemCount: chatList.length,
               itemBuilder: (context, index) {
@@ -74,10 +82,15 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           MyBottomNavigation(
             msgController: _msgController,
+            focusNode: _focusNode,
+            isEnable: !_isTyping,
             onSubmitted: (value) async {
+              _focusNode.unfocus();
               await sendMessage(modelsProvider: modelProvider);
             },
             sendMsgFunction: () async {
+              _focusNode.unfocus();
+
               await sendMessage(modelsProvider: modelProvider);
             },
           ),
@@ -86,12 +99,18 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  void scrollListToEnd() {
+    _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 250), curve: Curves.easeInOut);
+  }
+
   Future<void> sendMessage({required ModelsProvider modelsProvider}) async {
     try {
       setState(() {
         _isTyping = true;
-        chatList.add(ChatModel(msg: _msgController.text, index: 0));
-        _msgController.clear();
+        chatList.add(
+          ChatModel(msg: _msgController.text, index: 0),
+        );
       });
       log('Message Sent');
       chatList.addAll(
@@ -100,11 +119,14 @@ class _ChatScreenState extends State<ChatScreen> {
           model: modelsProvider.getCurrentlyModel,
         ),
       );
-      setState(() {});
+      setState(() {
+        _msgController.clear();
+      });
     } catch (e) {
       log(e.toString());
     } finally {
       setState(() {
+        scrollListToEnd();
         _isTyping = false;
       });
     }
@@ -114,14 +136,17 @@ class _ChatScreenState extends State<ChatScreen> {
 class MyBottomNavigation extends StatelessWidget {
   const MyBottomNavigation({
     Key? key,
+    required this.isEnable,
     required this.msgController,
     required this.sendMsgFunction,
     required this.onSubmitted,
+    required this.focusNode,
   }) : super(key: key);
-
+  final bool isEnable;
   final TextEditingController msgController;
   final Function() sendMsgFunction;
   final Function(String value) onSubmitted;
+  final FocusNode focusNode;
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -132,6 +157,8 @@ class MyBottomNavigation extends StatelessWidget {
           children: [
             Expanded(
               child: TextField(
+                enabled: isEnable,
+                focusNode: focusNode,
                 controller: msgController,
                 onSubmitted: onSubmitted,
                 style: TextStyle(color: Colors.white),
