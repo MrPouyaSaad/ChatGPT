@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 
 import 'package:chat_gpt/constants/const.dart';
@@ -32,10 +33,29 @@ class ChatWidget extends StatelessWidget {
                   width: 12,
                 ),
                 Expanded(
-                  child: Text(
-                    msg,
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
+                  child: isUser
+                      ? Text(
+                          msg,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                        )
+                      : AnimatedTextKit(
+                          isRepeatingAnimation: false,
+                          repeatForever: false,
+                          displayFullTextOnTap: true,
+                          totalRepeatCount: 1,
+                          animatedTexts: [
+                            TyperAnimatedText(
+                              msg.trim(),
+                              textStyle: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                              ),
+                            )
+                          ],
+                        ),
                 ),
                 if (!isUser) ...[
                   Row(
