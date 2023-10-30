@@ -1,9 +1,16 @@
-import 'package:chat_gpt/constants/const.dart';
-import 'package:chat_gpt/services/services.dart';
-import 'package:chat_gpt/widgets/chat_widget.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:provider/provider.dart';
+
+import 'package:chat_gpt/constants/const.dart';
+import 'package:chat_gpt/providers/models_provider.dart';
+import 'package:chat_gpt/services/api.dart';
+import 'package:chat_gpt/services/services.dart';
+import 'package:chat_gpt/widgets/chat_widget.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -13,9 +20,24 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  bool _isTyping = true;
+  bool _isTyping = false;
+  late TextEditingController _msgController;
+  @override
+  void initState() {
+    _msgController = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _msgController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final modelProvider = Provider.of<ModelsProvider>(context);
+
     return Scaffold(
       appBar: myAppBar(context),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -45,7 +67,27 @@ class _ChatScreenState extends State<ChatScreen> {
             height: 1,
             color: Colors.black26,
           ),
-          MyBottomNavigation(),
+          MyBottomNavigation(
+            msgController: _msgController,
+            sendMsgFunction: () async {
+              try {
+                setState(() {
+                  _isTyping = true;
+                });
+                log('Message Sent');
+                final msg = await ApiServices.sendMsg(
+                  msg: _msgController.text,
+                  model: modelProvider.getCurrentlyModel,
+                );
+              } catch (e) {
+                log(e.toString());
+              } finally {
+                setState(() {
+                  _isTyping = false;
+                });
+              }
+            },
+          ),
         ],
       ),
     );
@@ -54,9 +96,13 @@ class _ChatScreenState extends State<ChatScreen> {
 
 class MyBottomNavigation extends StatelessWidget {
   const MyBottomNavigation({
-    super.key,
-  });
+    Key? key,
+    required this.msgController,
+    required this.sendMsgFunction,
+  }) : super(key: key);
 
+  final TextEditingController msgController;
+  final Function() sendMsgFunction;
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -67,6 +113,7 @@ class MyBottomNavigation extends StatelessWidget {
           children: [
             Expanded(
               child: TextField(
+                controller: msgController,
                 style: TextStyle(color: Colors.white),
                 cursorColor: Colors.white,
                 decoration: InputDecoration.collapsed(
@@ -76,7 +123,7 @@ class MyBottomNavigation extends StatelessWidget {
               ),
             ),
             IconButton(
-              onPressed: () {},
+              onPressed: sendMsgFunction,
               icon: Icon(
                 Icons.send,
                 color: Colors.white,
