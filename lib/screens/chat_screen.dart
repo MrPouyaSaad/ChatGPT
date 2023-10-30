@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:developer';
 
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -26,6 +27,7 @@ class _ChatScreenState extends State<ChatScreen> {
   late TextEditingController _msgController;
   late ScrollController _scrollController;
   late FocusNode _focusNode;
+  bool isError = false;
   @override
   void initState() {
     _scrollController = ScrollController();
@@ -84,14 +86,26 @@ class _ChatScreenState extends State<ChatScreen> {
             msgController: _msgController,
             focusNode: _focusNode,
             isEnable: !_isTyping,
+            isError: isError,
             onSubmitted: (value) async {
-              _focusNode.unfocus();
-              await sendMessage(modelsProvider: modelProvider);
+              if (_msgController.text.isNotEmpty) {
+                _focusNode.unfocus();
+                await sendMessage(modelsProvider: modelProvider);
+              } else {
+                setState(() {
+                  isError = true;
+                });
+              }
             },
             sendMsgFunction: () async {
-              _focusNode.unfocus();
-
-              await sendMessage(modelsProvider: modelProvider);
+              if (_msgController.text.isNotEmpty) {
+                _focusNode.unfocus();
+                await sendMessage(modelsProvider: modelProvider);
+              } else {
+                setState(() {
+                  isError = true;
+                });
+              }
             },
           ),
         ],
@@ -112,7 +126,6 @@ class _ChatScreenState extends State<ChatScreen> {
           ChatModel(msg: _msgController.text, index: 0),
         );
       });
-      log('Message Sent');
       chatList.addAll(
         await ApiServices.sendMsg(
           msg: _msgController.text,
@@ -141,43 +154,66 @@ class MyBottomNavigation extends StatelessWidget {
     required this.sendMsgFunction,
     required this.onSubmitted,
     required this.focusNode,
+    required this.isError,
   }) : super(key: key);
   final bool isEnable;
   final TextEditingController msgController;
   final Function() sendMsgFunction;
   final Function(String value) onSubmitted;
   final FocusNode focusNode;
+  final bool isError;
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: cardColor,
-      child: Padding(
-        padding: const EdgeInsets.only(left: 12, bottom: 4, top: 4),
-        child: Row(
-          children: [
-            Expanded(
-              child: TextField(
-                enabled: isEnable,
-                focusNode: focusNode,
-                controller: msgController,
-                onSubmitted: onSubmitted,
-                style: TextStyle(color: Colors.white),
-                cursorColor: Colors.white,
-                decoration: InputDecoration.collapsed(
-                  hintText: 'How can I help you?',
-                  hintStyle: TextStyle(color: Colors.grey),
+    return Container(
+      padding: const EdgeInsets.only(left: 12, bottom: 4, top: 4),
+      decoration: BoxDecoration(
+        color: cardColor,
+        border: isError
+            ? Border.all(color: Theme.of(context).colorScheme.error, width: 2)
+            : null,
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              enabled: isEnable,
+              focusNode: focusNode,
+              controller: msgController,
+              onSubmitted: onSubmitted,
+              style: TextStyle(color: Colors.white),
+              cursorColor: Colors.white,
+              decoration: InputDecoration(
+                isCollapsed: true,
+                border: InputBorder.none,
+                floatingLabelBehavior: FloatingLabelBehavior.never,
+                label: AnimatedTextKit(
+                  isRepeatingAnimation: false,
+                  repeatForever: false,
+                  displayFullTextOnTap: true,
+                  totalRepeatCount: 1,
+                  animatedTexts: [
+                    TyperAnimatedText(
+                      'How can I help you?'.trim(),
+                      speed: Duration(milliseconds: 50),
+                      textStyle: TextStyle(
+                        color: Colors.white60,
+                        fontSize: 14,
+                      ),
+                    )
+                  ],
                 ),
+                hintStyle: TextStyle(color: Colors.grey),
               ),
             ),
-            IconButton(
-              onPressed: sendMsgFunction,
-              icon: Icon(
-                Icons.send,
-                color: Colors.white,
-              ),
+          ),
+          IconButton(
+            onPressed: sendMsgFunction,
+            icon: Icon(
+              Icons.send,
+              color: Colors.white,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
