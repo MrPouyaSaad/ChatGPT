@@ -7,6 +7,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
 import 'package:chat_gpt/constants/const.dart';
+import 'package:chat_gpt/models/chat_model.dart';
 import 'package:chat_gpt/providers/models_provider.dart';
 import 'package:chat_gpt/services/api.dart';
 import 'package:chat_gpt/services/services.dart';
@@ -34,9 +35,12 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
+  List<ChatModel> chatList = [];
   @override
   Widget build(BuildContext context) {
-    final modelProvider = Provider.of<ModelsProvider>(context);
+    final modelProvider = Provider.of<ModelsProvider>(
+      context,
+    );
 
     return Scaffold(
       appBar: myAppBar(context),
@@ -55,10 +59,11 @@ class _ChatScreenState extends State<ChatScreen> {
           Expanded(
             child: ListView.builder(
               shrinkWrap: true,
-              itemCount: 20,
+              itemCount: chatList.length,
               itemBuilder: (context, index) {
                 return ChatWidget(
                   isUser: index.isEven,
+                  msg: chatList[index].msg,
                 );
               },
             ),
@@ -69,28 +74,40 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           MyBottomNavigation(
             msgController: _msgController,
+            onSubmitted: (value) async {
+              await sendMessage(modelsProvider: modelProvider);
+            },
             sendMsgFunction: () async {
-              try {
-                setState(() {
-                  _isTyping = true;
-                });
-                log('Message Sent');
-                final msg = await ApiServices.sendMsg(
-                  msg: _msgController.text,
-                  model: modelProvider.getCurrentlyModel,
-                );
-              } catch (e) {
-                log(e.toString());
-              } finally {
-                setState(() {
-                  _isTyping = false;
-                });
-              }
+              await sendMessage(modelsProvider: modelProvider);
             },
           ),
         ],
       ),
     );
+  }
+
+  Future<void> sendMessage({required ModelsProvider modelsProvider}) async {
+    try {
+      setState(() {
+        _isTyping = true;
+        chatList.add(ChatModel(msg: _msgController.text, index: 0));
+        _msgController.clear();
+      });
+      log('Message Sent');
+      chatList.addAll(
+        await ApiServices.sendMsg(
+          msg: _msgController.text,
+          model: modelsProvider.getCurrentlyModel,
+        ),
+      );
+      setState(() {});
+    } catch (e) {
+      log(e.toString());
+    } finally {
+      setState(() {
+        _isTyping = false;
+      });
+    }
   }
 }
 
@@ -99,10 +116,12 @@ class MyBottomNavigation extends StatelessWidget {
     Key? key,
     required this.msgController,
     required this.sendMsgFunction,
+    required this.onSubmitted,
   }) : super(key: key);
 
   final TextEditingController msgController;
   final Function() sendMsgFunction;
+  final Function(String value) onSubmitted;
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -114,6 +133,7 @@ class MyBottomNavigation extends StatelessWidget {
             Expanded(
               child: TextField(
                 controller: msgController,
+                onSubmitted: onSubmitted,
                 style: TextStyle(color: Colors.white),
                 cursorColor: Colors.white,
                 decoration: InputDecoration.collapsed(

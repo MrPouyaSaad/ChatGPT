@@ -7,8 +7,11 @@ class ChatWidget extends StatelessWidget {
   const ChatWidget({
     Key? key,
     required this.isUser,
+    required this.msg,
   }) : super(key: key);
   final bool isUser;
+  final String msg;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -30,7 +33,7 @@ class ChatWidget extends StatelessWidget {
                 ),
                 Expanded(
                   child: Text(
-                    'Hello',
+                    msg,
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
