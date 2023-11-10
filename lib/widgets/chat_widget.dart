@@ -3,6 +3,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 
 import 'package:chat_gpt/constants/const.dart';
+import 'package:get/get.dart';
 
 class ChatWidget extends StatelessWidget {
   const ChatWidget({
@@ -40,7 +41,7 @@ class ChatWidget extends StatelessWidget {
                             color: Colors.white,
                             fontSize: 16,
                           ),
-                        )
+                        ).marginOnly(top: 6)
                       : AnimatedTextKit(
                           isRepeatingAnimation: false,
                           repeatForever: false,
@@ -55,7 +56,7 @@ class ChatWidget extends StatelessWidget {
                               ),
                             )
                           ],
-                        ),
+                        ).marginOnly(top: 6),
                 ),
                 if (!isUser) ...[
                   Row(
@@ -72,7 +73,7 @@ class ChatWidget extends StatelessWidget {
                         color: Colors.white,
                       )
                     ],
-                  )
+                  ).marginOnly(top: 6, left: 8)
                 ]
               ],
             ),
