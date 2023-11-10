@@ -2,15 +2,13 @@
 import 'dart:developer';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:chat_gpt/providers/chat_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
-
 import 'package:chat_gpt/constants/const.dart';
 import 'package:chat_gpt/models/chat_model.dart';
 import 'package:chat_gpt/providers/models_provider.dart';
-import 'package:chat_gpt/services/api.dart';
 import 'package:chat_gpt/services/services.dart';
 import 'package:chat_gpt/widgets/chat_widget.dart';
 
@@ -44,13 +42,12 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
-  List<ChatModel> chatList = [];
+  // List<ChatModel> chatList = [];
   @override
   Widget build(BuildContext context) {
-    final modelProvider = Provider.of<ModelsProvider>(
-      context,
-    );
-
+    final modelProvider = Provider.of<ModelsProvider>(context);
+    final chatProvider = Provider.of<ChatProvider>(context);
+    final chatList = chatProvider.getchatList;
     return Scaffold(
       appBar: myAppBar(context),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -90,7 +87,8 @@ class _ChatScreenState extends State<ChatScreen> {
             onSubmitted: (value) async {
               if (_msgController.text.isNotEmpty) {
                 _focusNode.unfocus();
-                await sendMessage(modelsProvider: modelProvider);
+                await sendMessage(
+                    modelsProvider: modelProvider, chatProvider: chatProvider);
               } else {
                 setState(() {
                   isError = true;
@@ -100,7 +98,8 @@ class _ChatScreenState extends State<ChatScreen> {
             sendMsgFunction: () async {
               if (_msgController.text.isNotEmpty) {
                 _focusNode.unfocus();
-                await sendMessage(modelsProvider: modelProvider);
+                await sendMessage(
+                    modelsProvider: modelProvider, chatProvider: chatProvider);
               } else {
                 setState(() {
                   isError = true;
@@ -118,23 +117,21 @@ class _ChatScreenState extends State<ChatScreen> {
         duration: Duration(milliseconds: 250), curve: Curves.easeInOut);
   }
 
-  Future<void> sendMessage({required ModelsProvider modelsProvider}) async {
+  Future<void> sendMessage(
+      {required ModelsProvider modelsProvider,
+      required ChatProvider chatProvider}) async {
+    String tempMsg = _msgController.text;
     try {
       setState(() {
         _isTyping = true;
-        chatList.add(
-          ChatModel(msg: _msgController.text, index: 0),
-        );
-      });
-      chatList.addAll(
-        await ApiServices.sendMsg(
-          msg: _msgController.text,
-          model: modelsProvider.getCurrentlyModel,
-        ),
-      );
-      setState(() {
+        chatProvider.addUserMessage(msg: _msgController.text);
         _msgController.clear();
       });
+
+      await chatProvider.getAnswers(
+        msg: tempMsg,
+        modelID: modelsProvider.getCurrentlyModel,
+      );
     } catch (e) {
       log(e.toString());
     } finally {
