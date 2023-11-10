@@ -20,5 +20,6 @@ class ChatProvider with ChangeNotifier {
     chatList.addAll(
       await ApiServices.sendMsg(msg: msg, model: modelID),
     );
+    notifyListeners();
   }
 }
