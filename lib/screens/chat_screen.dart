@@ -134,6 +134,8 @@ class _ChatScreenState extends State<ChatScreen> {
       );
     } catch (e) {
       log(e.toString());
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
     } finally {
       setState(() {
         scrollListToEnd();

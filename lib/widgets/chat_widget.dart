@@ -56,7 +56,7 @@ class ChatWidget extends StatelessWidget {
                               ),
                             )
                           ],
-                        ).marginOnly(top: 6),
+                        ).marginOnly(top: 6, right: 8),
                 ),
                 if (!isUser) ...[
                   Row(
@@ -73,7 +73,7 @@ class ChatWidget extends StatelessWidget {
                         color: Colors.white,
                       )
                     ],
-                  ).marginOnly(top: 6, left: 8)
+                  ).marginOnly(top: 4)
                 ]
               ],
             ),
