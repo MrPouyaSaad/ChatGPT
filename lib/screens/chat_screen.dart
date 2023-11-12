@@ -86,6 +86,7 @@ class _ChatScreenState extends State<ChatScreen> {
             isError: isError,
             onSubmitted: (value) async {
               if (_msgController.text.isNotEmpty) {
+                isError = false;
                 _focusNode.unfocus();
                 await sendMessage(
                     modelsProvider: modelProvider, chatProvider: chatProvider);
@@ -97,6 +98,8 @@ class _ChatScreenState extends State<ChatScreen> {
             },
             sendMsgFunction: () async {
               if (_msgController.text.isNotEmpty) {
+                isError = false;
+
                 _focusNode.unfocus();
                 await sendMessage(
                     modelsProvider: modelProvider, chatProvider: chatProvider);

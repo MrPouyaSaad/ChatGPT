@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:chat_gpt/constants/const.dart';
 import 'package:chat_gpt/models/models_model.dart';
 import 'package:chat_gpt/providers/models_provider.dart';
@@ -15,12 +17,13 @@ class _DropDownWidgetState extends State<DropDownWidget> {
   String? currentModel;
   @override
   Widget build(BuildContext context) {
-    final modelProvider = Provider.of<ModelsProvider>(context, listen: true);
+    final modelProvider = Provider.of<ModelsProvider>(context);
     currentModel = modelProvider.getCurrentlyModel;
     return FutureBuilder<List<Models>>(
       future: modelProvider.getAllModels(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
+          log(snapshot.toString());
           return Center(
             child: Text(snapshot.error.toString()),
           );
